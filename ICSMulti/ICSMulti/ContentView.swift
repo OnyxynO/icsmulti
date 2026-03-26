@@ -31,10 +31,11 @@ struct ContentView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(!peutExporter)
+                .keyboardShortcut("s", modifiers: .command)
                 .padding()
             }
         }
-        .frame(minWidth: 560, minHeight: 400)
+        .frame(minWidth: 700, minHeight: 400)
         .alert("Erreur de validation", isPresented: $afficherErreur) {
             Button("OK") {}
         } message: {
@@ -42,9 +43,10 @@ struct ContentView: View {
         }
     }
 
+    @MainActor
     private func exporter() {
         for occurrence in store.occurrences {
-            guard occurrence.dateFin > occurrence.dateDebut else {
+            guard occurrence.dateFin >= occurrence.dateDebut else {
                 messageErreur = "L'heure de fin doit être postérieure à l'heure de début pour chaque occurrence."
                 afficherErreur = true
                 return
@@ -77,6 +79,11 @@ struct ContentView: View {
 
 struct FormMetadonnees: View {
     @Bindable var store: EvenementStore
+    @FocusState private var champActif: ChampFormulaire?
+
+    enum ChampFormulaire: Hashable {
+        case titre, notes
+    }
 
     var body: some View {
         Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 10) {
@@ -86,15 +93,19 @@ struct FormMetadonnees: View {
                     .gridColumnAlignment(.trailing)
                 TextField("Nom de l'événement", text: $store.titre)
                     .textFieldStyle(.roundedBorder)
+                    .focused($champActif, equals: .titre)
+                    .onSubmit { champActif = .notes }
             }
             GridRow {
-                Text("Description")
+                Text("Notes")
                     .foregroundStyle(.secondary)
                     .gridColumnAlignment(.trailing)
-                TextField("Optionnelle", text: $store.description)
+                TextField("Optionnelle", text: $store.notes)
                     .textFieldStyle(.roundedBorder)
+                    .focused($champActif, equals: .notes)
             }
         }
+        .onAppear { champActif = .titre }
     }
 }
 
@@ -119,8 +130,18 @@ struct ListeOccurrences: View {
                 Divider()
                 ScrollView {
                     VStack(spacing: 0) {
-                        ForEach($store.occurrences) { $occurrence in
-                            LigneOccurrence(occurrence: $occurrence) {
+                        ForEach(store.occurrences) { occurrence in
+                            LigneOccurrence(
+                                occurrence: Binding(
+                                    get: {
+                                        store.occurrences.first(where: { $0.id == occurrence.id }) ?? occurrence
+                                    },
+                                    set: { nouvelleValeur in
+                                        guard let index = store.occurrences.firstIndex(where: { $0.id == occurrence.id }) else { return }
+                                        store.occurrences[index] = nouvelleValeur
+                                    }
+                                )
+                            ) {
                                 store.occurrences.removeAll { $0.id == occurrence.id }
                             }
                             Divider()
@@ -135,6 +156,7 @@ struct ListeOccurrences: View {
             } label: {
                 Label("Ajouter une occurrence", systemImage: "plus")
             }
+            .keyboardShortcut("n", modifiers: .command)
             .padding(.horizontal)
             .padding(.vertical, 10)
         }
@@ -161,16 +183,29 @@ struct LigneOccurrence: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            DatePicker("", selection: $occurrence.dateDebut, displayedComponents: [.date, .hourAndMinute])
-                .labelsHidden()
-                .frame(minWidth: 200)
+            Toggle("", isOn: $occurrence.touteLaJournee)
+                .toggleStyle(.checkbox)
+                .help("Journée entière")
 
-            Image(systemName: "arrow.right")
-                .foregroundStyle(.secondary)
-                .font(.caption)
-
-            DatePicker("", selection: $occurrence.dateFin, displayedComponents: .hourAndMinute)
-                .labelsHidden()
+            if occurrence.touteLaJournee {
+                DatePicker("", selection: $occurrence.dateDebut, displayedComponents: .date)
+                    .labelsHidden()
+                Image(systemName: "arrow.right")
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
+                DatePicker("", selection: $occurrence.dateFin, displayedComponents: .date)
+                    .labelsHidden()
+            } else {
+                DatePicker("", selection: $occurrence.dateDebut, displayedComponents: [.date, .hourAndMinute])
+                    .labelsHidden()
+                    .frame(minWidth: 200)
+                Image(systemName: "arrow.right")
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
+                DatePicker("", selection: $occurrence.dateFin, displayedComponents: [.date, .hourAndMinute])
+                    .labelsHidden()
+                    .frame(minWidth: 200)
+            }
 
             TextField("Lieu", text: $occurrence.lieu)
                 .textFieldStyle(.roundedBorder)

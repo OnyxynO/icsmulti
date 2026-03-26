@@ -6,4 +6,5 @@ struct ICSOccurrence: Identifiable {
     var dateDebut: Date
     var dateFin: Date
     var lieu: String = ""
+    var touteLaJournee: Bool = false
 }
