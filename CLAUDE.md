@@ -104,6 +104,15 @@ avec des `// MARK:` pour l'organisation.
 - **RFC 5545 échappement** : SUMMARY, DESCRIPTION, LOCATION doivent échapper
   `\` → `\\`, `;` → `\;`, `,` → `\,`, `\n` → `\n`. Ordre : `\` en premier.
 
+- **Navigation Tab dans les TextFields macOS — problème non résolu** :
+  Tab est intercepté par AppKit avant que SwiftUI le voie. Ni `.onSubmit` (Return seulement),
+  ni `.onKeyPress(.tab)` (non intercepté par AppKit), ni `NSEvent.addLocalMonitorForEvents`
+  (monitor global, complexe et fragile) ne fonctionnent de façon fiable pour router Tab
+  depuis un TextField vers un Button.
+  Pistes non encore essayées : `NSViewRepresentable` avec un NSTextField personnalisé et
+  override de `keyDown`, ou accepter que Tab ne fonctionne pas et documenter ⌘N comme
+  raccourci alternatif pour "Ajouter une occurrence" (déjà en place).
+
 ## Règles spécifiques
 
 - Commentaires et noms de variables en français
