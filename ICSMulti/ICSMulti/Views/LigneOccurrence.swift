@@ -9,6 +9,8 @@ struct LigneOccurrence: View {
 
     @State private var serviceAdresse = RechercheAdresseService()
     @State private var afficherSuggestions = false
+    @State private var afficherMapPicker = false
+    @State private var selectionEnCours = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -42,21 +44,23 @@ struct LigneOccurrence: View {
                     .frame(minWidth: 80, maxWidth: 160)
                     .focused($champActif, equals: .lieu(occurrence.id))
                     .onChange(of: occurrence.lieu) { _, nouveauLieu in
+                        if selectionEnCours {
+                            selectionEnCours = false
+                            return
+                        }
                         serviceAdresse.recherche = nouveauLieu
                         afficherSuggestions = nouveauLieu.count >= 3
                     }
 
-                // Bouton ouvrir dans Apple Plans
-                if !occurrence.lieu.trimmingCharacters(in: .whitespaces).isEmpty {
-                    Button {
-                        RechercheAdresseService.ouvrirDansPlans(adresse: occurrence.lieu)
-                    } label: {
-                        Image(systemName: "map")
-                            .foregroundStyle(.secondary)
-                    }
-                    .buttonStyle(.plain)
-                    .help("Ouvrir dans Plans")
+                // Bouton choisir sur la carte
+                Button {
+                    afficherMapPicker = true
+                } label: {
+                    Image(systemName: "map")
+                        .foregroundStyle(.secondary)
                 }
+                .buttonStyle(.plain)
+                .help("Choisir sur la carte")
 
                 Button(action: onSupprimer) {
                     Image(systemName: "xmark.circle.fill")
@@ -73,9 +77,12 @@ struct LigneOccurrence: View {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(serviceAdresse.suggestions.prefix(5), id: \.self) { suggestion in
                         Button {
-                            occurrence.lieu = [suggestion.title, suggestion.subtitle]
+                            let adresse = [suggestion.title, suggestion.subtitle]
                                 .filter { !$0.isEmpty }
                                 .joined(separator: ", ")
+                            selectionEnCours = true
+                            occurrence.lieu = adresse
+                            RechercheAdresseService.sauvegarderLieu(adresse)
                             afficherSuggestions = false
                         } label: {
                             VStack(alignment: .leading, spacing: 2) {
@@ -103,6 +110,11 @@ struct LigneOccurrence: View {
                 .padding(.trailing, 60)
                 .padding(.bottom, 4)
             }
+        }
+        .sheet(isPresented: $afficherMapPicker, onDismiss: {
+            selectionEnCours = true
+        }) {
+            MapPickerSheet(adresseSelectionnee: $occurrence.lieu)
         }
     }
 }
