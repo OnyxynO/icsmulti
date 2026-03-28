@@ -114,6 +114,46 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
 - **RFC 5545 échappement** : SUMMARY, DESCRIPTION, LOCATION doivent échapper
   `\` → `\\`, `;` → `\;`, `,` → `\,`, `\n` → `\n`. Ordre : `\` en premier.
 
+- **CLGeocoder déprécié macOS 26** : toute l'API CoreLocation de géocodage est dépréciée.
+  Migrer vers MapKit : `MKGeocodingRequest(addressString:)`, `MKReverseGeocodingRequest(location:)`,
+  `item.location.coordinate` (plus `item.placemark.coordinate`), `item.address?.fullAddress`.
+  Stocker la requête en `@State` pour pouvoir appeler `.cancel()`. `import CoreLocation` inutile
+  (réexporté par MapKit).
+
+- **`.onDelete` inexistant sur macOS** : le swipe-to-delete est un geste iOS. Sur macOS,
+  `.onDelete` nécessite un mode édition explicite — pas intuitif pour une app utilitaire.
+  Préférer un bouton trash visible par ligne.
+
+- **App qui ne se ferme pas avec la croix rouge** : comportement macOS par défaut — fermer
+  la dernière fenêtre ne quitte pas l'app. Pour une app utilitaire sans gestion de documents :
+  ```swift
+  @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+  class AppDelegate: NSObject, NSApplicationDelegate {
+      func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
+  }
+  ```
+
+- **`let id = UUID()` incompatible avec Codable** : `let id: UUID = UUID()` empêche la
+  synthèse automatique de `Codable` (le décodeur ne peut pas assigner une `let` avec
+  initializer par défaut). Solution : `let id: UUID` + `init(id: UUID = UUID(), ...)` explicite.
+
+- **Modification de `@Binding` depuis un callback déclenche `onChange`** : écrire
+  `occurrence.lieu = adresse` dans un bouton de suggestion relance `.onChange(of: occurrence.lieu)`.
+  Utiliser un flag `selectionEnCours = true` avant la modification, vérifié et remis à `false`
+  dans le `onChange`. Même problème avec `onDismiss` d'une sheet qui écrit dans un binding.
+
+- **`Task` plutôt que `DispatchQueue.asyncAfter` pour les timers UI** : `asyncAfter` n'est
+  pas annulable. Si le timer peut être relancé (ex: feedback qui se réaffiche), utiliser `Task`
+  avec `tache?.cancel()` avant de relancer.
+
+- **DatePicker envoie des valeurs intermédiaires** : ne pas déclencher de transformations lourdes
+  (tri, réorganisation) dans le `set:` d'un Binding lié à un DatePicker. Réserver ces
+  transformations aux actions ponctuelles stables (ajout, duplication).
+
+- **Icône Release vs Debug** : le format "single 1024×1024" peut ne pas fonctionner en Release.
+  Fournir toutes les tailles explicitement (16, 32, 64, 128, 256, 512, 1024) dans `Contents.json`.
+  Convertir le PNG source via `sips -s format png` avant redimensionnement si nécessaire.
+
 - **Navigation Tab dans les TextFields macOS — problème non résolu** :
   Tab est intercepté par AppKit avant que SwiftUI le voie. Ni `.onSubmit` (Return seulement),
   ni `.onKeyPress(.tab)` (non intercepté par AppKit), ni `NSEvent.addLocalMonitorForEvents`
