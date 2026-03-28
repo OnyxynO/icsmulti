@@ -20,19 +20,22 @@ Distribution : `.dmg` non signé via GitHub Releases.
 ```
 ICSMulti/
 ├── ICSMultiApp.swift       # Point d'entrée @main
-├── ContentView.swift       # Toutes les vues : ContentView, FormMetadonnees,
-│                           # ListeOccurrences, LigneOccurrence (MARK séparés)
+├── ContentView.swift       # Vues principales : ContentView, FormMetadonnees,
+│                           # ListeOccurrences (MARK séparés)
 ├── Models/
 │   ├── EvenementStore.swift  # @Observable — titre, notes, occurrences
 │   └── ICSOccurrence.swift   # struct — dateDebut, dateFin, lieu, touteLaJournee
+├── Views/
+│   └── LigneOccurrence.swift # Ligne occurrence + autocomplétion adresse + lien Plans
 └── Services/
-    └── ICSGenerator.swift  # Génération du fichier .ics (RFC 5545)
+    ├── ICSGenerator.swift            # Génération du fichier .ics (RFC 5545)
+    └── RechercheAdresseService.swift # Autocomplétion via MKLocalSearchCompleter + historique UserDefaults
 ```
 
-**Note architecture** : les sous-vues sont dans `ContentView.swift` (pas dans un dossier Views/).
-Raison : les nouveaux fichiers Swift hors Xcode ne s'ajoutent pas automatiquement au `.pbxproj` —
-il faudrait l'éditer manuellement ou passer par Xcode. Pour éviter ça, tout est dans un seul fichier
-avec des `// MARK:` pour l'organisation.
+**Note architecture** : les vues principales restent dans `ContentView.swift` avec des `// MARK:`.
+`LigneOccurrence` a été extrait dans `Views/` car il intègre `RechercheAdresseService` (MapKit)
+et aurait alourdi `ContentView.swift` significativement. Les nouveaux fichiers Swift doivent être
+ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de projet).
 
 ## État d'avancement
 
@@ -48,7 +51,14 @@ avec des `// MARK:` pour l'organisation.
   - Défensif : guards sur indices tableau, échappement RFC 5545 (`,` `;` `\` `\n`)
   - Conformité RFC 5545 : line folding à 75 octets
   - Navigation clavier : focus auto sur Titre, Tab/Return entre champs, ⌘N / ⌘S
-- **Reste** : suite navigation (Tab dans occurrences), lien Maps pour le lieu, stabilisation UI, icône app + `.dmg`
+- **Phase 5** ✅ — Autocomplétion adresse + lien Maps (session 3)
+  - `RechercheAdresseService` : `MKLocalSearchCompleter` déclenché dès 3 caractères
+  - Région par défaut centrée sur la France métropolitaine
+  - Historique des lieux récents via `UserDefaults` (max 20, dédupliqué)
+  - Dropdown suggestions (max 5) affiché sous le champ lieu
+  - Bouton "map" → ouvre l'adresse dans Apple Plans (`maps://?q=...`)
+  - `LigneOccurrence` extrait dans `Views/LigneOccurrence.swift`
+- **Reste** : suite navigation (Tab dans occurrences), stabilisation UI, icône app + `.dmg`
 
 ## Pièges connus SwiftUI / macOS
 
