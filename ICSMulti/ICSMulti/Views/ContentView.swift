@@ -7,6 +7,9 @@ struct ContentView: View {
     @State private var store = EvenementStore()
     @State private var messageErreur: String = ""
     @State private var afficherErreur = false
+    @State private var exportReussi = false
+    @State private var afficherHistorique = false
+    @State private var tacheDisparition: Task<Void, Never>?
     @FocusState private var champActif: ChampPrincipal?
 
     /// Champs navigables par Tab/Return dans l'interface
@@ -52,6 +55,36 @@ struct ContentView: View {
         } message: {
             Text(messageErreur)
         }
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button {
+                    afficherHistorique = true
+                } label: {
+                    Label("Historique", systemImage: "clock.arrow.circlepath")
+                }
+                .help("Historique des exports")
+            }
+        }
+        .sheet(isPresented: $afficherHistorique) {
+            HistoriqueSheet { evenement in
+                chargerEvenement(evenement)
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if exportReussi {
+                Text("Fichier exporté avec succès")
+                    .font(.callout)
+                    .fontWeight(.medium)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(.green.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
+                    .foregroundStyle(.white)
+                    .shadow(radius: 4)
+                    .padding(.bottom, 60)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: exportReussi)
     }
 
     @MainActor
@@ -79,10 +112,27 @@ struct ContentView: View {
 
         do {
             try contenu.write(to: url, atomically: true, encoding: .utf8)
+            HistoriqueService.sauvegarder(store)
+            // Feedback visuel
+            exportReussi = true
+            tacheDisparition?.cancel()
+            tacheDisparition = Task {
+                try? await Task.sleep(for: .seconds(2))
+                guard !Task.isCancelled else { return }
+                withAnimation(.easeOut(duration: 0.3)) {
+                    exportReussi = false
+                }
+            }
         } catch {
             messageErreur = "Impossible d'écrire le fichier : \(error.localizedDescription)"
             afficherErreur = true
         }
+    }
+
+    private func chargerEvenement(_ evenement: EvenementSauvegarde) {
+        store.titre = evenement.titre
+        store.notes = evenement.notes
+        store.occurrences = evenement.occurrences
     }
 }
 

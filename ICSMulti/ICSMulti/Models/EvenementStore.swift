@@ -7,4 +7,9 @@ class EvenementStore {
     var titre: String = ""
     var notes: String = ""
     var occurrences: [ICSOccurrence] = []
+
+    /// Trie les occurrences par date de début croissante
+    func trierOccurrences() {
+        occurrences.sort { $0.dateDebut < $1.dateDebut }
+    }
 }

@@ -48,6 +48,17 @@ struct ICSGenerator {
         return String(bytes: resultat, encoding: .utf8) ?? ligne
     }
 
+    /// Formate la durée de rappel en format RFC 5545 (ISO 8601 duration)
+    private static func formaterDureeRappel(_ minutes: Int) -> String {
+        if minutes == 1440 {
+            return "-P1D"
+        } else if minutes >= 60 && minutes % 60 == 0 {
+            return "-PT\(minutes / 60)H"
+        } else {
+            return "-PT\(minutes)M"
+        }
+    }
+
     // Retourne le contenu complet du fichier .ics
     static func generer(depuis store: EvenementStore) -> String {
         var lignes: [String] = []
@@ -75,6 +86,14 @@ struct ICSGenerator {
             }
             if !occurrence.lieu.isEmpty {
                 lignes.append("LOCATION:\(echapper(occurrence.lieu))")
+            }
+            // VALARM — rappel optionnel
+            if let rappel = occurrence.rappelMinutes {
+                lignes.append("BEGIN:VALARM")
+                lignes.append("TRIGGER:\(formaterDureeRappel(rappel))")
+                lignes.append("ACTION:DISPLAY")
+                lignes.append("DESCRIPTION:Rappel")
+                lignes.append("END:VALARM")
             }
             lignes.append("END:VEVENT")
         }
