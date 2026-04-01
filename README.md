@@ -20,7 +20,18 @@ ICSMulti vous permet de créer un seul fichier `.ics` contenant toutes vos dates
 
 1. Ouvrez le fichier `.dmg` téléchargé
 2. Glissez **ICSMulti** dans le dossier **Applications**
-3. Au premier lancement, faites **clic droit → Ouvrir** (l'app n'est pas signée)
+3. Au premier lancement, macOS bloque l'app car elle n'est pas signée. Deux options :
+
+**Option A — Réglages Système** *(recommandée)*
+- Essayez d'ouvrir l'app une première fois → macOS affiche un refus
+- Ouvrez **Réglages Système → Confidentialité et sécurité**
+- Cliquez sur **"Ouvrir quand même"** en bas de la section Sécurité
+
+**Option B — Terminal**
+```bash
+xattr -d com.apple.quarantine /Applications/ICSMulti.app
+```
+Puis ouvrez l'app normalement. Cette commande supprime uniquement la restriction de quarantaine sur ICSMulti, sans modifier vos réglages de sécurité.
 
 ## Utilisation
 
