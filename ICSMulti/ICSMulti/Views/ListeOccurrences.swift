@@ -9,10 +9,10 @@ struct ListeOccurrences: View {
         VStack(alignment: .leading, spacing: 0) {
             // En-tête avec compteur et bouton ajouter (toujours au même endroit)
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text("Occurrences")
+                Text("Événements")
                     .font(.headline)
                 if !store.occurrences.isEmpty {
-                    Text("\(store.occurrences.count) occurrence\(store.occurrences.count > 1 ? "s" : "")")
+                    Text("\(store.occurrences.count) événement\(store.occurrences.count > 1 ? "s" : "")")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -36,9 +36,9 @@ struct ListeOccurrences: View {
             if store.occurrences.isEmpty {
                 // État vide
                 ContentUnavailableView(
-                    "Aucune occurrence",
+                    "Aucun événement",
                     systemImage: "calendar.badge.plus",
-                    description: Text("Cliquez sur + pour ajouter une date")
+                    description: Text("Cliquez sur + pour ajouter un événement")
                 )
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
@@ -84,9 +84,9 @@ struct ListeOccurrences: View {
         let nouvelle = ICSOccurrence(dateDebut: debut, dateFin: fin)
         store.occurrences.append(nouvelle)
         store.trierOccurrences()
-        // Focus sur le champ Lieu de la nouvelle occurrence
+        // Focus sur le champ Titre de la nouvelle occurrence
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            champActif = .lieu(nouvelle.id)
+            champActif = .titre(nouvelle.id)
         }
     }
 
@@ -96,6 +96,8 @@ struct ListeOccurrences: View {
               let nouvelleFin = calendrier.date(byAdding: .day, value: 7, to: originale.dateFin) else { return }
 
         let copie = ICSOccurrence(
+            titre: originale.titre,
+            notes: originale.notes,
             dateDebut: nouveauDebut,
             dateFin: nouvelleFin,
             lieu: originale.lieu,

@@ -15,6 +15,18 @@ struct LigneOccurrence: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            // Titre et notes de l'occurrence
+            HStack(spacing: 8) {
+                TextField("Titre de l'événement", text: $occurrence.titre)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($champActif, equals: .titre(occurrence.id))
+                TextField("Notes (optionnel)", text: $occurrence.notes)
+                    .textFieldStyle(.roundedBorder)
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .padding(.bottom, 4)
+
             HStack(spacing: 12) {
                 Toggle("Journée", isOn: $occurrence.touteLaJournee)
                     .toggleStyle(.checkbox)

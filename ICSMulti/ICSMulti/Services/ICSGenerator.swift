@@ -80,9 +80,9 @@ struct ICSGenerator {
                 lignes.append("DTSTART;TZID=Europe/Paris:\(formateurDate.string(from: occurrence.dateDebut))")
                 lignes.append("DTEND;TZID=Europe/Paris:\(formateurDate.string(from: occurrence.dateFin))")
             }
-            lignes.append("SUMMARY:\(echapper(store.titre))")
-            if !store.notes.isEmpty {
-                lignes.append("DESCRIPTION:\(echapper(store.notes))")
+            lignes.append("SUMMARY:\(echapper(occurrence.titre))")
+            if !occurrence.notes.isEmpty {
+                lignes.append("DESCRIPTION:\(echapper(occurrence.notes))")
             }
             if !occurrence.lieu.isEmpty {
                 lignes.append("LOCATION:\(echapper(occurrence.lieu))")

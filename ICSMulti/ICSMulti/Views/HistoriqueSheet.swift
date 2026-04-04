@@ -52,7 +52,7 @@ struct HistoriqueSheet: View {
                                 dismiss()
                             } label: {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(entree.titre)
+                                    Text(entree.occurrences.first?.titre ?? "Sans titre")
                                         .font(.body)
                                         .fontWeight(.medium)
                                     HStack(spacing: 8) {
@@ -61,7 +61,7 @@ struct HistoriqueSheet: View {
                                             .foregroundStyle(.secondary)
                                         Text("\u{2022}")
                                             .foregroundStyle(.tertiary)
-                                        Text("\(entree.nbOccurrences) occurrence\(entree.nbOccurrences > 1 ? "s" : "")")
+                                        Text("\(entree.nbOccurrences) événement\(entree.nbOccurrences > 1 ? "s" : "")")
                                             .font(.caption)
                                             .foregroundStyle(.secondary)
                                     }

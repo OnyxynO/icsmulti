@@ -14,21 +14,18 @@ struct ContentView: View {
 
     /// Champs navigables par Tab/Return dans l'interface
     enum ChampPrincipal: Hashable {
-        case titre, notes, boutonAjouter
+        case boutonAjouter
         case lieu(UUID)
+        case titre(UUID)
     }
 
     private var peutExporter: Bool {
-        !store.titre.trimmingCharacters(in: .whitespaces).isEmpty && !store.occurrences.isEmpty
+        !store.occurrences.isEmpty &&
+        store.occurrences.allSatisfy { !$0.titre.trimmingCharacters(in: .whitespaces).isEmpty }
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            FormMetadonnees(store: store, champActif: $champActif)
-                .padding()
-
-            Divider()
-
             ListeOccurrences(store: store, champActif: $champActif)
 
             Divider()
@@ -47,7 +44,7 @@ struct ContentView: View {
         .frame(minWidth: 700, minHeight: 400)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                champActif = .titre
+                champActif = .boutonAjouter
             }
         }
         .alert("Erreur de validation", isPresented: $afficherErreur) {
@@ -98,7 +95,7 @@ struct ContentView: View {
         }
 
         let contenu = ICSGenerator.generer(depuis: store)
-        let nomFichier = store.titre.trimmingCharacters(in: .whitespaces)
+        let nomFichier = store.occurrences.first?.titre.trimmingCharacters(in: .whitespaces) ?? "export"
 
         let panneau = NSSavePanel()
         if let icsType = UTType(filenameExtension: "ics") {
@@ -130,8 +127,6 @@ struct ContentView: View {
     }
 
     private func chargerEvenement(_ evenement: EvenementSauvegarde) {
-        store.titre = evenement.titre
-        store.notes = evenement.notes
         store.occurrences = evenement.occurrences
     }
 }

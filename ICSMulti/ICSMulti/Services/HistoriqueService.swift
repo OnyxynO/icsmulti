@@ -3,16 +3,12 @@ import Foundation
 /// Représentation d'un événement sauvegardé dans l'historique
 struct EvenementSauvegarde: Identifiable, Codable {
     let id: UUID
-    let titre: String
-    let notes: String
     let dateSauvegarde: Date
     let nbOccurrences: Int
-    let occurrences: [ICSOccurrence]
+    let occurrences: [ICSOccurrence]  // titre/notes désormais dans chaque ICSOccurrence
 
     init(depuis store: EvenementStore) {
         self.id = UUID()
-        self.titre = store.titre
-        self.notes = store.notes
         self.dateSauvegarde = Date()
         self.nbOccurrences = store.occurrences.count
         self.occurrences = store.occurrences
@@ -21,7 +17,7 @@ struct EvenementSauvegarde: Identifiable, Codable {
 
 /// Gestion de l'historique des événements exportés (max 20, UserDefaults)
 struct HistoriqueService {
-    private static let cleUserDefaults = "historiqueEvenements"
+    private static let cleUserDefaults = "historiqueEvenements_v2"
     private static let maxEntrees = 20
 
     /// Sauvegarde l'état actuel du store dans l'historique

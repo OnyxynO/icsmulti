@@ -1,11 +1,9 @@
 import Foundation
 import Observation
 
-// Etat global de l'application — titre, notes, liste des occurrences
+// Etat global de l'application — liste des occurrences (titre/notes dans chaque occurrence)
 @Observable
 class EvenementStore {
-    var titre: String = ""
-    var notes: String = ""
     var occurrences: [ICSOccurrence] = []
 
     /// Trie les occurrences par date de début croissante
