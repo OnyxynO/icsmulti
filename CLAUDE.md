@@ -20,21 +20,23 @@ Distribution : `.dmg` non signé via GitHub Releases.
 ```
 ICSMulti/
 ├── ICSMultiApp.swift       # Point d'entrée @main
-├── ContentView.swift       # Vues principales : ContentView, FormMetadonnees,
-│                           # ListeOccurrences (MARK séparés)
+├── ContentView.swift       # Vues principales : ContentView (toolbar, export, chargement historique)
 ├── Models/
-│   ├── EvenementStore.swift  # @Observable — titre, notes, occurrences
-│   └── ICSOccurrence.swift   # struct — dateDebut, dateFin, lieu, touteLaJournee
+│   ├── EvenementStore.swift  # @Observable — liste des occurrences
+│   └── ICSOccurrence.swift   # struct — titre, notes, dateDebut, dateFin, lieu, touteLaJournee
 ├── Views/
-│   └── LigneOccurrence.swift # Ligne occurrence + autocomplétion adresse + lien Plans
+│   ├── ListeOccurrences.swift  # Liste + ajout + duplication + état vide
+│   ├── LigneOccurrence.swift   # Ligne occurrence : titre, notes, dates, lieu, rappel
+│   ├── HistoriqueSheet.swift   # Sheet historique des 20 derniers exports
+│   └── MapPickerSheet.swift    # Sheet sélection de lieu sur carte
 └── Services/
     ├── ICSGenerator.swift            # Génération du fichier .ics (RFC 5545)
+    ├── HistoriqueService.swift       # Historique exports UserDefaults (clé v2)
     └── RechercheAdresseService.swift # Autocomplétion via MKLocalSearchCompleter + historique UserDefaults
 ```
 
-**Note architecture** : les vues principales restent dans `ContentView.swift` avec des `// MARK:`.
-`LigneOccurrence` a été extrait dans `Views/` car il intègre `RechercheAdresseService` (MapKit)
-et aurait alourdi `ContentView.swift` significativement. Les nouveaux fichiers Swift doivent être
+**Note architecture** : `ContentView.swift` orchestre l'app (toolbar, export, chargement historique).
+Les vues de liste et de ligne sont dans `Views/`. Les nouveaux fichiers Swift doivent être
 ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de projet).
 
 ## État d'avancement
@@ -58,7 +60,13 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
   - Dropdown suggestions (max 5) affiché sous le champ lieu
   - Bouton "map" → ouvre l'adresse dans Apple Plans (`maps://?q=...`)
   - `LigneOccurrence` extrait dans `Views/LigneOccurrence.swift`
-- **Reste** : suite navigation (Tab dans occurrences), stabilisation UI, icône app + `.dmg`
+- **Phase 6** ✅ — Refactoring titre/notes par occurrence (session 4)
+  - `titre` et `notes` déplacés de `EvenementStore` vers `ICSOccurrence`
+  - `FormMetadonnees.swift` supprimé — champs intégrés dans `LigneOccurrence`
+  - `peutExporter` vérifie que toutes les occurrences ont un titre non vide
+  - `HistoriqueService` : nouvelle clé UserDefaults `v2` (ancien historique effacé au premier lancement)
+  - Vocabulaire UI : "occurrence" → "événement"
+- **Reste** : suite navigation Tab dans les occurrences
 
 ## Pièges connus SwiftUI / macOS
 
@@ -75,7 +83,7 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
   projet, SourceKit peut analyser un fichier isolément.
 
 - **`@Bindable`** : nécessaire dans les sous-vues pour obtenir des `Binding` depuis un type
-  `@Observable`. Syntaxe : `@Bindable var store: EvenementStore` + `$store.titre`.
+  `@Observable`. Syntaxe : `@Bindable var store: EvenementStore` + `$store.occurrences`.
 
 - **App Sandbox + NSSavePanel** : le projet a `ENABLE_APP_SANDBOX = YES` par défaut.
   Sans `ENABLE_USER_SELECTED_FILES = readwrite` dans le `.pbxproj`, NSSavePanel crashe

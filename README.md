@@ -1,12 +1,12 @@
 # ICSMulti
 
-Créez des fichiers de calendrier `.ics` avec plusieurs dates et plusieurs lieux — en quelques secondes.
+Créez des fichiers de calendrier `.ics` avec plusieurs événements et plusieurs lieux — en quelques secondes.
 
 ## À quoi ça sert ?
 
 Vous organisez des cours, des concerts, un festival ou une tournée ? Vous avez besoin de publier un calendrier sur votre site web pour que vos participants puissent l'ajouter en un clic à leur calendrier (Google Calendar, Apple Calendrier, Outlook…) ?
 
-ICSMulti vous permet de créer un seul fichier `.ics` contenant toutes vos dates, même si chaque date se déroule dans un lieu différent.
+ICSMulti vous permet de créer un seul fichier `.ics` contenant plusieurs événements, chacun avec son propre titre, ses notes et son lieu.
 
 **Exemple :** une tournée de 8 concerts dans 8 villes → un seul fichier `.ics` à mettre en téléchargement sur votre site.
 
@@ -35,17 +35,16 @@ Puis ouvrez l'app normalement. Cette commande supprime uniquement la restriction
 
 ## Utilisation
 
-1. Renseignez le **titre** de votre événement et une **description** facultative
-2. Ajoutez vos dates avec le bouton **+**
-3. Pour chaque date : choisissez le début, la fin, et le lieu
+1. Ajoutez vos événements avec le bouton **+**
+2. Pour chaque événement : renseignez le **titre**, une **description** facultative, les dates de début et de fin, et le lieu
    - Le champ lieu propose des suggestions automatiques
    - Le bouton carte 🗺 permet de choisir un lieu directement sur une carte
-4. Cliquez sur **Exporter .ics** et enregistrez le fichier
-5. Mettez ce fichier en téléchargement sur votre site — vos participants cliquent dessus et l'événement s'ajoute à leur calendrier
+3. Cliquez sur **Exporter .ics** et enregistrez le fichier
+4. Mettez ce fichier en téléchargement sur votre site — vos participants cliquent dessus et les événements s'ajoutent à leur calendrier
 
 ## Fonctionnalités
 
-- Autant de dates que vous voulez, chaque date avec son propre lieu
+- Autant d'événements que vous voulez, chacun avec son propre titre, ses notes et son lieu
 - Événements sur une journée entière ou avec horaires précis
 - Rappels optionnels (15 min, 1h, 1 jour avant…)
 - Autocomplétion des adresses
