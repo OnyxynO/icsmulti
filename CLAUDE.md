@@ -170,6 +170,11 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
   Fournir toutes les tailles explicitement (16, 32, 64, 128, 256, 512, 1024) dans `Contents.json`.
   Convertir le PNG source via `sips -s format png` avant redimensionnement si nécessaire.
 
+- **Deployment target test ≠ app** : Xcode crée les nouveaux targets de test avec le
+  deployment target de la version Xcode courante (ex: 26.4), pas celui de l'app (26.3).
+  Toujours aligner manuellement `MACOSX_DEPLOYMENT_TARGET` du target de test sur celui
+  de l'app, sinon les runners CI refuseront d'exécuter les tests.
+
 - **Navigation Tab dans les TextFields macOS — problème non résolu** :
   Tab est intercepté par AppKit avant que SwiftUI le voie. Ni `.onSubmit` (Return seulement),
   ni `.onKeyPress(.tab)` (non intercepté par AppKit), ni `NSEvent.addLocalMonitorForEvents`
