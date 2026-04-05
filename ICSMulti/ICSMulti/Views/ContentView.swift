@@ -42,10 +42,9 @@ struct ContentView: View {
             }
         }
         .frame(minWidth: 700, minHeight: 400)
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                champActif = .boutonAjouter
-            }
+        .task {
+            try? await Task.sleep(for: .milliseconds(500))
+            champActif = .boutonAjouter
         }
         .alert("Erreur de validation", isPresented: $afficherErreur) {
             Button("OK") {}
@@ -84,7 +83,6 @@ struct ContentView: View {
         .animation(.easeInOut(duration: 0.3), value: exportReussi)
     }
 
-    @MainActor
     private func exporter() {
         for occurrence in store.occurrences {
             guard occurrence.dateFin >= occurrence.dateDebut else {

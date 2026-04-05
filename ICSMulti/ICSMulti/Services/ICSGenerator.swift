@@ -68,9 +68,12 @@ struct ICSGenerator {
         lignes.append("PRODID:-//ICSMulti//FR")
         lignes.append("CALSCALE:GREGORIAN")
 
+        let horodatage = formateurDate.string(from: Date())
+
         for occurrence in store.occurrences {
             lignes.append("BEGIN:VEVENT")
             lignes.append("UID:\(UUID().uuidString)@icsmulti")
+            lignes.append("DTSTAMP;TZID=Europe/Paris:\(horodatage)")
             if occurrence.touteLaJournee {
                 // RFC 5545 : VALUE=DATE, fin exclusive (J+1)
                 let finExclusive = Calendar.current.date(byAdding: .day, value: 1, to: occurrence.dateFin) ?? occurrence.dateFin

@@ -33,6 +33,8 @@ ICSMulti/
     ├── ICSGenerator.swift            # Génération du fichier .ics (RFC 5545)
     ├── HistoriqueService.swift       # Historique exports UserDefaults (clé v2)
     └── RechercheAdresseService.swift # Autocomplétion via MKLocalSearchCompleter + historique UserDefaults
+ICSMultiTests/
+└── ICSGeneratorTests.swift  # 24 tests Swift Testing (structure, CRLF, échappement, folding, VALARM)
 ```
 
 **Note architecture** : `ContentView.swift` orchestre l'app (toolbar, export, chargement historique).
@@ -66,6 +68,12 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
   - `peutExporter` vérifie que toutes les occurrences ont un titre non vide
   - `HistoriqueService` : nouvelle clé UserDefaults `v2` (ancien historique effacé au premier lancement)
   - Vocabulaire UI : "occurrence" → "événement"
+- **Phase 7** ✅ — Tests unitaires, CI/CD et corrections RFC 5545 (session 5)
+  - 24 tests Swift Testing sur `ICSGenerator` (structure, CRLF, DTSTAMP, échappement, line folding, VALARM, champs optionnels)
+  - `DTSTAMP` obligatoire ajouté dans chaque VEVENT (RFC 5545 §3.6.1)
+  - `DispatchQueue.main.asyncAfter` remplacé par `.task { }` annulable dans `ContentView`
+  - `@MainActor` redondant supprimé sur `exporter()` (implicite via build settings)
+  - Workflow GitHub Actions CI (build + tests à chaque push/PR sur `main`)
 - **Reste** : suite navigation Tab dans les occurrences
 
 ## Pièges connus SwiftUI / macOS
@@ -173,8 +181,8 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
 
 ## À faire
 
-- **Tests automatisés** : pas de tests unitaires sur `ICSGenerator.swift` — envisager XCTest sur la logique de génération ICS (line folding, échappement RFC 5545, journées entières, VALARM)
-- **CI/CD** : pas de GitHub Actions — envisager un workflow qui build le projet à chaque push pour détecter les régressions de compilation
+- **CI/CD à valider** : le workflow `.github/workflows/ci.yml` cible `macos-15` + `Xcode_16.3` (runners GitHub actuels). Le `MACOSX_DEPLOYMENT_TARGET = 26.3` du projet peut nécessiter un ajustement quand les runners seront mis à jour.
+- **Navigation Tab** : suite navigation Tab dans les occurrences (problème non résolu, voir pièges connus)
 
 ## Règles spécifiques
 
