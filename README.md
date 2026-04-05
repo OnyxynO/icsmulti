@@ -51,6 +51,13 @@ Puis ouvrez l'app normalement. Cette commande supprime uniquement la restriction
 - Historique de vos 20 derniers exports
 - Format standard RFC 5545 — compatible avec tous les calendriers
 
+## Écosystème ICSMulti
+
+| Projet | Stack | Description |
+|---|---|---|
+| [icsmulti](https://github.com/OnyxynO/icsmulti) | Swift 6 + SwiftUI | App macOS native — multi-occurrences, MapKit, export DMG |
+| [icsmulti-web](https://github.com/OnyxynO/icsmulti-web) | Next.js 16 + TypeScript | Web app + API REST + widget intégrable |
+
 ## Licence
 
 MIT
