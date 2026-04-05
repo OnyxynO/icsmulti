@@ -171,6 +171,11 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
   override de `keyDown`, ou accepter que Tab ne fonctionne pas et documenter ⌘N comme
   raccourci alternatif pour "Ajouter une occurrence" (déjà en place).
 
+## À faire
+
+- **Tests automatisés** : pas de tests unitaires sur `ICSGenerator.swift` — envisager XCTest sur la logique de génération ICS (line folding, échappement RFC 5545, journées entières, VALARM)
+- **CI/CD** : pas de GitHub Actions — envisager un workflow qui build le projet à chaque push pour détecter les régressions de compilation
+
 ## Règles spécifiques
 
 - Commentaires et noms de variables en français
