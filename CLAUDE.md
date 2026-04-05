@@ -181,7 +181,7 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
 
 ## À faire
 
-- **CI/CD à valider** : le workflow `.github/workflows/ci.yml` cible `macos-15` + `Xcode_16.3` (runners GitHub actuels). Le `MACOSX_DEPLOYMENT_TARGET = 26.3` du projet peut nécessiter un ajustement quand les runners seront mis à jour.
+- **CI/CD** : le workflow `.github/workflows/ci.yml` cible `macos-26` + `Xcode_26.3` (GA depuis février 2026). Le projet nécessite macOS 26+ (APIs `MKReverseGeocodingRequest`, etc.).
 - **Navigation Tab** : suite navigation Tab dans les occurrences (problème non résolu, voir pièges connus)
 
 ## Règles spécifiques
