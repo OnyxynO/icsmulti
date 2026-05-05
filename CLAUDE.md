@@ -1,6 +1,6 @@
 # ICSMulti — CLAUDE.md
 
-@../GUIDELINES_PROJETS.md
+@../../PRINCIPES.md
 
 ## Contexte projet
 
