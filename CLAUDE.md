@@ -10,7 +10,7 @@ Distribution : `.dmg` non signé via GitHub Releases.
 ## Stack
 
 - **Langage** : Swift 6
-- **UI** : SwiftUI (macOS 14+ Sonoma minimum)
+- **UI** : SwiftUI (macOS 26+ minimum — APIs `MKReverseGeocodingRequest` etc. ; CI cible `macos-26`)
 - **Génération ICS** : Swift pur, RFC 5545, pas de dépendance externe
 - **Export** : `NSSavePanel` natif macOS
 - **Distribution** : Archive Xcode → `.dmg` → GitHub Releases
