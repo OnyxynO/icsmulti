@@ -124,6 +124,14 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
 - **Swift 6 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`** : toute l'app est implicitement
   `@MainActor`. Annoter `@MainActor` sur des méthodes individuelles est redondant.
 
+- **Mode langage Swift 6 (`SWIFT_VERSION = 6.0`, depuis le 2026-10-21)** : un délégué AppKit/MapKit
+  `nonisolated` qui envoie ses arguments vers le MainActor (`Task { @MainActor in … completer.results }`)
+  est refusé (`sending … risks causing data races`), même en copiant les résultats d'abord
+  (`MKLocalSearchCompletion` n'est pas `Sendable`). Patron retenu : conformance
+  `@preconcurrency MKLocalSearchCompleterDelegate` + méthodes isolées au MainActor (vérification
+  à l'exécution, MapKit appelle bien sur le fil principal). La cible de test n'a pas l'isolation
+  MainActor par défaut : annoter la suite `@MainActor`.
+
 - **RFC 5545 line folding** : les lignes > 75 octets doivent être repliées (CRLF + espace).
   Sans ça, certains clients calendrier rejettent le fichier. Implémenter `replierLigne()`.
 

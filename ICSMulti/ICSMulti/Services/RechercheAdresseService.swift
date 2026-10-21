@@ -2,7 +2,7 @@ import MapKit
 
 /// Service d'autocomplétion d'adresses via MapKit
 @Observable
-final class RechercheAdresseService: NSObject, MKLocalSearchCompleterDelegate {
+final class RechercheAdresseService: NSObject, @preconcurrency MKLocalSearchCompleterDelegate {
     @ObservationIgnored private let completer = MKLocalSearchCompleter()
 
     /// Texte de recherche — met à jour les suggestions automatiquement
@@ -32,16 +32,13 @@ final class RechercheAdresseService: NSObject, MKLocalSearchCompleterDelegate {
 
     // MARK: - MKLocalSearchCompleterDelegate
 
-    nonisolated func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
-        Task { @MainActor in
-            self.suggestions = completer.results
-        }
+    // MapKit appelle le délégué sur le fil principal : @preconcurrency le vérifie à l'exécution
+    func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+        suggestions = completer.results
     }
 
-    nonisolated func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
-        Task { @MainActor in
-            self.suggestions = []
-        }
+    func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
+        suggestions = []
     }
 
     // MARK: - Historique des lieux

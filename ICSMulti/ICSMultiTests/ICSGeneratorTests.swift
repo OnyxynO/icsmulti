@@ -3,6 +3,7 @@ import Foundation
 @testable import ICSMulti
 
 /// Tests unitaires pour ICSGenerator — génération de fichiers .ics conformes RFC 5545
+@MainActor
 struct ICSGeneratorTests {
 
     // MARK: - Structure globale
