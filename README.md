@@ -12,7 +12,7 @@ ICSMulti vous permet de créer un seul fichier `.ics` contenant plusieurs évén
 
 ## Téléchargement
 
-👉 [Télécharger ICSMulti-1.0.dmg](https://github.com/OnyxynO/icsmulti/releases/latest)
+👉 [Télécharger la dernière version (.dmg)](https://github.com/OnyxynO/icsmulti/releases/latest)
 
 **Configuration requise :** macOS 26 ou supérieur
 
