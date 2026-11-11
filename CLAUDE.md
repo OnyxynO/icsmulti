@@ -74,6 +74,10 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
   - `DispatchQueue.main.asyncAfter` remplacé par `.task { }` annulable dans `ContentView`
   - `@MainActor` redondant supprimé sur `exporter()` (implicite via build settings)
   - Workflow GitHub Actions CI (build + tests à chaque push/PR sur `main`)
+- **Phase 8** ✅ — Maintenance Xcode 27 + release v1.2 (2026-11-11)
+  - CI en matrice Xcode 26.3 (plancher) / Xcode 27.2 (local)
+  - Réglages recommandés Xcode 27.2 appliqués (`DEAD_CODE_STRIPPING`, `STRING_CATALOG_GENERATE_SYMBOLS`)
+  - v1.2 (build 2) publiée : binaire universel arm64 + x86_64, signature ad hoc
 - **Reste** : suite navigation Tab dans les occurrences
 
 ## Pièges connus SwiftUI / macOS
@@ -182,6 +186,26 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
   deployment target de la version Xcode courante (ex: 26.4), pas celui de l'app (26.3).
   Toujours aligner manuellement `MACOSX_DEPLOYMENT_TARGET` du target de test sur celui
   de l'app, sinon les runners CI refuseront d'exécuter les tests.
+
+- **Mise à niveau des réglages Xcode** : la commande « Validate Settings… » n'apparaît dans le
+  menu **Editor** que si l'éditeur de projet est affiché (clic sur l'icône bleue du projet).
+  Aucun outil MCP/CLI ne la déclenche : c'est une action manuelle.
+
+- **Format projet JSON `.xcproj` (Xcode 27.2+)** : Xcode propose de convertir le `.pbxproj` en
+  JSON. Ce format n'est lu que par Xcode 27+ → **refuser** tant que la CI teste Xcode 26.3.
+
+- **Release `.dmg` en ligne de commande** (reproduit la structure des DMG précédents) :
+  ```bash
+  xcodebuild archive -project ICSMulti/ICSMulti.xcodeproj -scheme ICSMulti -configuration Release \
+    -destination 'generic/platform=macOS' -archivePath $B/ICSMulti.xcarchive
+  mkdir $B/dmg && cp -R $B/ICSMulti.xcarchive/Products/Applications/ICSMulti.app $B/dmg/
+  ln -s /Applications $B/dmg/Applications
+  hdiutil create -volname "ICSMulti X.Y" -srcfolder $B/dmg -format UDZO $B/ICSMulti-X.Y.dmg
+  gh release create vX.Y $B/ICSMulti-X.Y.dmg --draft --target main --title "ICSMulti X.Y" --notes-file notes.md
+  ```
+  `generic/platform=macOS` produit un binaire universel (arm64 + x86_64) ; la v1.1 (archive
+  Xcode manuelle) n'était qu'arm64. Bumper `MARKETING_VERSION` + `CURRENT_PROJECT_VERSION`
+  sur la cible app uniquement.
 
 - **Navigation Tab dans les TextFields macOS — problème non résolu** :
   Tab est intercepté par AppKit avant que SwiftUI le voie. Ni `.onSubmit` (Return seulement),
