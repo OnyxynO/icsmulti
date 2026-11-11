@@ -194,7 +194,11 @@ ajoutés manuellement au `.pbxproj` via Xcode (glisser dans le navigateur de pro
 
 ## À faire
 
-- **CI/CD** : le workflow `.github/workflows/ci.yml` cible `macos-26` + `Xcode_26.3` (GA depuis février 2026). Le projet nécessite macOS 26+ (APIs `MKReverseGeocodingRequest`, etc.).
+- **CI/CD** : le workflow `.github/workflows/ci.yml` tourne en matrice : `macos-26` + `Xcode_26.3`
+  (plancher, aligné sur `MACOSX_DEPLOYMENT_TARGET = 26.3`) et `xcode-27` + `Xcode_27.2` (Xcode local).
+  L'image `xcode-27` est en preview chez GitHub (depuis 2026-11) : en cas de file d'attente ou
+  d'instabilité, c'est elle qu'il faut suspecter. Basculer sur le label GA dès sa sortie.
+  Le projet nécessite macOS 26+ (APIs `MKReverseGeocodingRequest`, etc.).
 - **Navigation Tab** : suite navigation Tab dans les occurrences (problème non résolu, voir pièges connus)
 
 ## Règles spécifiques
